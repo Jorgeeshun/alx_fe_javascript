@@ -115,10 +115,29 @@ function importFromJsonFile(event) {
 
 // --- Filtering ---
 function filterQuotes() {
-  const selected = categoryFilter.value;
-  localStorage.setItem("lastFilter", selected);
-  showRandomQuote();
+  const categorySelect = document.getElementById("categoryFilter");
+  const selectedCategory = categorySelect.value; // ✅ required variable
+
+  localStorage.setItem("selectedCategory", selectedCategory);
+
+  let filteredQuotes;
+  if (selectedCategory === "all") {
+    filteredQuotes = quotes;
+  } else {
+    filteredQuotes = quotes.filter(q => q.category === selectedCategory);
+  }
+
+  if (filteredQuotes.length > 0) {
+    const randomIndex = Math.floor(Math.random() * filteredQuotes.length);
+    const randomQuote = filteredQuotes[randomIndex];
+    document.getElementById("quoteDisplay").innerText =
+      `"${randomQuote.text}" - (${randomQuote.category})`;
+  } else {
+    document.getElementById("quoteDisplay").innerText =
+      "No quotes available for this category.";
+  }
 }
+
 
 // --- 🔥 Server Sync (NEW) ---
 async function fetchQuotesFromServer() {
