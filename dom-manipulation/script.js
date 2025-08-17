@@ -164,8 +164,30 @@ async function syncAllQuotesToServer() {
   }
 }
 
+// --- 🔥 Unified Sync Function ---
+async function syncQuotes() {
+  try {
+    const response = await fetch("https://jsonplaceholder.typicode.com/posts", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(quotes)  // send entire array
+    });
+
+    const result = await response.json();
+    console.log("Quotes synced (syncQuotes):", result);
+    notifyUser("Quotes successfully synced with server!");
+  } catch (err) {
+    console.error("Error syncing quotes:", err);
+    notifyUser("Failed to sync quotes with server.");
+  }
+}
+
+
 // Attach to button
 document.getElementById("syncAll").addEventListener("click", syncAllQuotesToServer);
+document.getElementById("syncAll").addEventListener("click", syncQuotes);
 
 
 function notifyUser(message) {
