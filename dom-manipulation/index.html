@@ -25,19 +25,21 @@
   <div class="controls">
     <div class="row">
       <button id="newQuote">Show New Quote</button>
+      <!-- ✅ Category filter dropdown -->
       <label>
         Category:
-        <select id="categoryFilter"></select>
+        <select id="categoryFilter" onchange="filterQuotes()">
+          <option value="all">All Categories</option>
+        </select>
       </label>
       <button id="exportJson">Export Quotes</button>
-      <!-- Import (as per spec: inline onchange uses importFromJsonFile(event)) -->
       <label class="row">
-        Import JSON:
+        Import Quotes:
         <input type="file" id="importFile" accept=".json" onchange="importFromJsonFile(event)" />
       </label>
     </div>
     <div class="status" id="status"></div>
-    <div class="note">Tip: Your quotes persist via <code>localStorage</code>. The last viewed quote and selected category are remembered using <code>sessionStorage</code>.</div>
+    <div class="note">Quotes are saved in <code>localStorage</code>. Your last filter is remembered for next time.</div>
   </div>
 
   <!-- Container where JS will dynamically inject the Add Quote form -->
