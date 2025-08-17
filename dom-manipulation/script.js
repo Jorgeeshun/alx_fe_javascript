@@ -177,7 +177,7 @@ async function syncQuotes() {
 
     const result = await response.json();
     console.log("Quotes synced (syncQuotes):", result);
-    notifyUser("Quotes successfully synced with server!");
+    notifyUser("Quotes synced with server!");
   } catch (err) {
     console.error("Error syncing quotes:", err);
     notifyUser("Failed to sync quotes with server.");
