@@ -144,6 +144,30 @@ async function fetchQuotesFromServer() {
   }
 }
 
+// --- 🔥 Sync ALL Quotes to Server ---
+async function syncAllQuotesToServer() {
+  try {
+    const response = await fetch("https://jsonplaceholder.typicode.com/posts", {
+      method: "POST",                     // ✅ required
+      headers: {                          // ✅ required
+        "Content-Type": "application/json" // ✅ required
+      },
+      body: JSON.stringify(quotes)        // send the entire quotes array
+    });
+
+    const result = await response.json();
+    console.log("All quotes synced to server:", result);
+    notifyUser("All quotes synced to server!");
+  } catch (err) {
+    console.error("Error syncing all quotes:", err);
+    notifyUser("Failed to sync all quotes.");
+  }
+}
+
+// Attach to button
+document.getElementById("syncAll").addEventListener("click", syncAllQuotesToServer);
+
+
 function notifyUser(message) {
   if (!statusBox) return;
   statusBox.textContent = message;
