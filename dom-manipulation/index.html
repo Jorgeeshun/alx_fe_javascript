@@ -23,6 +23,9 @@
     <h3>Add a New Quote</h3>
     <input id="newQuoteText" type="text" placeholder="Enter a new quote" />
     <input id="newQuoteCategory" type="text" placeholder="Enter quote category" />
+    <input type="file" id="importFile" accept=".json" onchange="importFromJsonFile(event)" /><br>
+    <button id="exportJson">Export Quotes as JSON</button>
+    <div id="status"></div>
     <button id="addQuoteBtn">Add Quote</button>
   </div>
 
@@ -31,7 +34,9 @@
     <h3>Filter by Category</h3>
     <select id="categoryFilter"></select>
   </div>
-
-  <script src="script.js"></script>
+  <!-- Container where JS will dynamically inject the Add Quote form -->
+  <div id="addQuoteContainer"></div>
+  
+  <script src="script.js"></scrip>
 </body>
 </html>

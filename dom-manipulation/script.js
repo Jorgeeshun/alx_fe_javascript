@@ -1,3 +1,8 @@
+// ===== Storage Keys =====
+const QUOTES_KEY = "dqg.quotes.v1";
+const LAST_QUOTE_KEY = "dqg.lastQuote";
+const SELECTED_CATEGORY_KEY = "dqg.selectedCategory";
+
 // Initial quotes array
 let quotes = [
   { text: "The best way to predict the future is to invent it.", category: "Inspiration" },
@@ -9,28 +14,97 @@ let quotes = [
 const quoteDisplay = document.getElementById("quoteDisplay");
 const newQuoteBtn = document.getElementById("newQuote");
 const categoryFilter = document.getElementById("categoryFilter");
+const exportBtn = document.getElementById("exportJson");
+const statusEl = document.getElementById("status");
+
+// ===== Utilities =====
+function setStatus(msg) {
+  statusEl.textContent = msg || "";
+}
+function sanitizeQuote(obj) {
+  // Returns a normalized quote object or null if invalid
+  if (!obj || typeof obj !== "object") return null;
+  const text = typeof obj.text === "string" ? obj.text.trim() : "";
+  const category = typeof obj.category === "string" ? obj.category.trim() : "";
+  if (!text || !category) return null;
+  return { text, category };
+}
+
+// ===== LocalStorage Handlers =====
+function loadQuotes() {
+  try {
+    const raw = localStorage.getItem(QUOTES_KEY);
+    if (!raw) {
+      // Seed defaults on first run
+      return [
+        { text: "The best way to predict the future is to invent it.", category: "Inspiration" },
+        { text: "Life is what happens when you're busy making other plans.", category: "Life" },
+        { text: "Do or do not. There is no try.", category: "Motivation" }
+      ];
+    }
+    const parsed = JSON.parse(raw);
+    if (!Array.isArray(parsed)) throw new Error("Stored quotes not an array.");
+    // sanitize & filter
+    const cleaned = parsed.map(sanitizeQuote).filter(Boolean);
+    return cleaned.length ? cleaned : [
+      { text: "Start where you are. Use what you have. Do what you can.", category: "Action" }
+    ];
+  } catch {
+    // Corrupt storage fallback
+    return [
+      { text: "Error reading saved data—storage reset to defaults.", category: "System" }
+    ];
+  }
+}
+
+function saveQuotes() {
+  localStorage.setItem(QUOTES_KEY, JSON.stringify(quotes));
+}
+
+// ===== SessionStorage Handlers (Optional) =====
+function saveLastViewedQuote(quote) {
+  try {
+    sessionStorage.setItem(LAST_QUOTE_KEY, JSON.stringify(quote));
+  } catch {}
+}
+function getLastViewedQuote() {
+  try {
+    const raw = sessionStorage.getItem(LAST_QUOTE_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch { return null; }
+}
+function saveSelectedCategory(value) {
+  try { sessionStorage.setItem(SELECTED_CATEGORY_KEY, value); } catch {}
+}
+function getSelectedCategory() {
+  try { return sessionStorage.getItem(SELECTED_CATEGORY_KEY); } catch { return null; }
+}
 
 // --- 1. Create Add Quote Form dynamically ---
 function createAddQuoteForm() {
-  const formSection = document.createElement("div");
-  formSection.classList.add("form-section");
 
-  const heading = document.createElement("h3");
-  heading.textContent = "Add a New Quote";
+    const container = document.getElementById("addQuoteContainer");
+    container.innerHTML = ""; // idempotent
 
-  const inputQuote = document.createElement("input");
-  inputQuote.type = "text";
-  inputQuote.placeholder = "Enter a new quote";
-  inputQuote.id = "newQuoteText";
+    const formSection = document.createElement("div");
+    formSection.classList.add("form-section");
 
-  const inputCategory = document.createElement("input");
-  inputCategory.type = "text";
-  inputCategory.placeholder = "Enter quote category";
-  inputCategory.id = "newQuoteCategory";
+    const heading = document.createElement("h3");
+    heading.textContent = "Add a New Quote";
 
-  const addBtn = document.createElement("button");
-  addBtn.textContent = "Add Quote";
-  addBtn.id = "addQuoteBtn";
+    const inputQuote = document.createElement("input");
+    inputQuote.type = "text";
+    inputQuote.placeholder = "Enter a new quote";
+    inputQuote.id = "newQuoteText";
+
+    const inputCategory = document.createElement("input");
+    inputCategory.type = "text";
+    inputCategory.placeholder = "Enter quote category";
+    inputCategory.id = "newQuoteCategory";
+
+    const addBtn = document.createElement("button");
+    addBtn.textContent = "Add Quote";
+    addBtn.id = "addQuoteBtn";
 
   // Append to form section
   formSection.appendChild(heading);
